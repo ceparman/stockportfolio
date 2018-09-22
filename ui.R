@@ -11,18 +11,20 @@ fixedPage(
          actionButton("reset","Reset Portfolio")
          
   )
+  
   ),
+  hr(),
   fixedRow(
   
-    column(4,
+    column(5,
   
   
-  DT::dataTableOutput("stocks")
-  ) ,
+           rHandsontableOutput("stocks",height = 200,width=350)
+  ),
   
-  column(4,offset = 4,
+  column(4,offset = 7,
          
-         
+        # rHandsontableOutput("stocks_selected",height = 200,width=300)
          DT::dataTableOutput("stocks_selected")
   ) 
   

@@ -1,20 +1,60 @@
 
 library(ggplot2)
 library(plotrix)
+library(rhandsontable)
 
 # Define server logic required to draw a histogram
 function(input, output) {
   
-  output$stocks <- DT::renderDataTable(
-
-    mtcars[1:10,1:3], options = list(lengthChange = FALSE,dom = 't')
-    
+  returns = readRDS("returns.rds")
+  Names <- unique(returns$Name)[order(unique(returns$Name))]
+  Models <- data.frame("Model_Name" = Names, 
+             Minimum = c(100000,120000,140000,159000,300000,25000,120000,140000),
+             Fee = c(.004,.0036,.007,.008,.01,.004,.0036,.007),
+            stringsAsFactors = FALSE)
+  
+  weights <- data.table( Weight = rep(0,nrow(Models)))
+  
+  selected <-data.frame(selected =  rep(FALSE,nrow(Models)))
+  
+  leverage <-data.frame(leverage =  rep(1,nrow(Models)))
+  
+  models = reactiveValues(stocks = cbind(Models,selected),
+                          port = cbind(Models$"Model_Name",leverage,weights)
   )
   
+  output$stocks <- renderRHandsontable({
+
+  #  rhandsontable(  Models  #, options = list(lengthChange = FALSE,dom = 't')
+  #  )
+    
+    ST = NULL
+    if (!is.null(input$stocks)) {
+      ST = setDT(hot_to_r(input$stocks))
+     
+      models[["stocks"]] = ST
+    } else if (!is.null(models[["stocks"]])) {
+      ST = models[["stocks"]]
+    }
+    
+    if (!is.null(ST))
+      rhandsontable(ST) %>% hot_col(col = "Model_Name", readOnly = TRUE) %>% 
+      hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
+      hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
+      
+      
+      
+      
+
+    
+    
+    
+  })
+  
   output$stocks_selected <- DT::renderDataTable(
-    # generate bins based on input$bins from ui.R
-    faithful[1:10,] 
-    ,options = list(lengthChange = FALSE,dom = 't')
+    # Get names and add 
+    mtcars[1:10,1:3]
+    ,options = list(lengthChange = FALSE,dom = 't') 
   )
   
   output$performance <- DT::renderDataTable(
