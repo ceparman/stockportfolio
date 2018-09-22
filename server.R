@@ -2,6 +2,7 @@
 library(ggplot2)
 library(plotrix)
 library(rhandsontable)
+library(dplyr)
 
 # Define server logic required to draw a histogram
 function(input, output) {
@@ -19,7 +20,9 @@ function(input, output) {
   
   leverage <-data.frame(leverage =  rep(1,nrow(Models)))
   
-  models = reactiveValues(stocks = cbind(Models,selected,leverage,weights))
+  models = reactiveValues(stocks = cbind(Models,selected),
+    
+                          port = cbind(leverage,weights))
   
   
   output$stocks <- renderRHandsontable({
@@ -37,17 +40,22 @@ function(input, output) {
     }
     
     if (!is.null(ST))
-      rhandsontable(ST) %>% hot_col(col = "Model_Name", readOnly = TRUE) %>% 
+   
+      rhandsontable(ST) %>% 
+      hot_col(col = "Model_Name", readOnly = TRUE) %>% 
       hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
       hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
 
     
-  })
+  }) 
   
   output$stocks_selected <- DT::renderDataTable({
     # Get names and add 
-   MT <- models[["stocks"]]
-   MT <- MT[MT$selected == TRUE,]
+ #  MT <- models[["post"]]
+   selected <- models[["stocks"]][,c("Model_Name","selected")]
+   MT <- cbind(selected,models[["port"]])
+   MT <- MT %>% filter(selected == TRUE)
+   
    DT::datatable(MT)
   })
  
