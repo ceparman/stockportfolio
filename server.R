@@ -19,9 +19,8 @@ function(input, output) {
   
   leverage <-data.frame(leverage =  rep(1,nrow(Models)))
   
-  models = reactiveValues(stocks = cbind(Models,selected),
-                          port = cbind(Models$"Model_Name",leverage,weights)
-  )
+  models = reactiveValues(stocks = cbind(Models,selected,leverage,weights))
+  
   
   output$stocks <- renderRHandsontable({
 
@@ -41,22 +40,20 @@ function(input, output) {
       rhandsontable(ST) %>% hot_col(col = "Model_Name", readOnly = TRUE) %>% 
       hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
       hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
-      
-      
-      
-      
 
-    
-    
     
   })
   
-  output$stocks_selected <- DT::renderDataTable(
+  output$stocks_selected <- DT::renderDataTable({
     # Get names and add 
-    mtcars[1:10,1:3]
-    ,options = list(lengthChange = FALSE,dom = 't') 
-  )
+   MT <- models[["stocks"]]
+   MT <- MT[MT$selected == TRUE,]
+   DT::datatable(MT)
+  })
+ 
   
+  
+   
   output$performance <- DT::renderDataTable(
     # generate bins based on input$bins from ui.R
     mtcars[1:10,1:8] 
