@@ -1,5 +1,6 @@
 library(shiny)
 library(shinydashboard)
+library(rhandsontable)
 
 # Define UI for application that draws a histogram
 fixedPage(
@@ -14,18 +15,18 @@ fixedPage(
   
   ),
   hr(),
-  fixedRow(
+  fluidRow(
   
     column(5,
   
   
-           rHandsontableOutput("stocks",height = 200,width=350)
+           rHandsontableOutput("stocks",height = 200,width=300)
   ),
   
-  column(4,offset = 7,
+  column(4,
          
-        # rHandsontableOutput("stocks_selected",height = 200,width=300)
-         DT::dataTableOutput("stocks_selected")
+         rHandsontableOutput("stocksselected",height = 200,width=350)
+        
   ) 
   
   

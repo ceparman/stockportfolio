@@ -2,6 +2,7 @@
 library(ggplot2)
 library(plotrix)
 library(rhandsontable)
+library(data.table)
 library(dplyr)
 
 # Define server logic required to draw a histogram
@@ -14,7 +15,7 @@ function(input, output) {
              Fee = c(.004,.0036,.007,.008,.01,.004,.0036,.007),
             stringsAsFactors = FALSE)
   
-  weights <- data.table( Weight = rep(0,nrow(Models)))
+  weights <- data.frame( Weight = rep(0,nrow(Models)))
   
   selected <-data.frame(selected =  rep(FALSE,nrow(Models)))
   
@@ -41,7 +42,7 @@ function(input, output) {
     
     if (!is.null(ST))
    
-      rhandsontable(ST) %>% 
+      rhandsontable(ST, rowHeaders = NULL) %>% 
       hot_col(col = "Model_Name", readOnly = TRUE) %>% 
       hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
       hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
@@ -49,14 +50,48 @@ function(input, output) {
     
   }) 
   
-  output$stocks_selected <- DT::renderDataTable({
+  output$stocksselected <- renderRHandsontable({
     # Get names and add 
- #  MT <- models[["post"]]
-   selected <- models[["stocks"]][,c("Model_Name","selected")]
-   MT <- cbind(selected,models[["port"]])
-   MT <- MT %>% filter(selected == TRUE)
+    
+
+      
+    isolate(    ST <- models[["stocks"]] )
+    
+    if(any(ST$selected == TRUE))  {  #update table save results
+      print("some selected")
+      if (!is.null(input$stocksselected)) {
+        
+       MT = setDT(hot_to_r(input$stocksselected))
+       print(MT)
+       print(which(ST$selected))
+       print( models[["port"]])
+     models[["port"]][which(ST$selected),] <- MT[,-1]
+       print(models[["port"]][which(ST$selected),])
+       
+      }
    
-   DT::datatable(MT)
+
+      lselected <- ST[,c("Model_Name","selected")]
+      DMT <- cbind(lselected,models[["port"]])
+      DMT <- DMT %>% filter(selected == TRUE)
+      DMT <- DMT %>% select(-selected)
+
+      #DT::datatable(MT)
+      rhandsontable(DMT, rowHeaders = NULL) 
+      
+      
+      
+      
+    } else{  #deal with an empty table
+      print("non selected") 
+     NULL
+      }
+      
+
+
+   
+   
+ 
   })
  
   
