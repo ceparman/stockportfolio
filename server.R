@@ -13,36 +13,40 @@ function(input, output) {
   Models <- data.frame("Model_Name" = Names, 
              Minimum = c(100000,120000,140000,159000,300000,25000,120000,140000),
              Fee = c(.004,.0036,.007,.008,.01,.004,.0036,.007),
-            stringsAsFactors = FALSE)
+             selected <-data.frame(selected =  rep(FALSE,length(names))),
+             leverage = data.frame(leverage =  rep(1,length(names))),
+             weights = data.frame( Weight = rep(0,length(names))),
+             stringsAsFactors = FALSE)
   
-  weights <- data.frame( Weight = rep(0,nrow(Models)))
+ # weights <- data.frame( Weight = rep(0,nrow(Models)))
   
-  selected <-data.frame(selected =  rep(FALSE,nrow(Models)))
+  #selected <-data.frame(selected =  rep(FALSE,nrow(Models)))
   
-  leverage <-data.frame(leverage =  rep(1,nrow(Models)))
+  #leverage <-data.frame(leverage =  rep(1,nrow(Models)))
   
-  models = reactiveValues(stocks = cbind(Models,selected),
+  values = reactiveValues(stocks = Models)
     
-                          port = cbind(leverage,weights))
+ # portfolio =  list( port = cbind(leverage,weights))
   
   
   output$stocks <- renderRHandsontable({
 
-  #  rhandsontable(  Models  #, options = list(lengthChange = FALSE,dom = 't')
-  #  )
+  
     
-    ST = NULL
+    DT = NULL
     if (!is.null(input$stocks)) {
-      ST = setDT(hot_to_r(input$stocks))
-     
-      models[["stocks"]] = ST
-    } else if (!is.null(models[["stocks"]])) {
-      ST = models[["stocks"]]
+      DT = setDT(hot_to_r(input$stocks))
+      
+      values[["stocks"]] = DT
+    } else if (!is.null(values[["stocks"]])) {
+      DT = values[["stocks"]]
     }
     
-    if (!is.null(ST))
+    if (!is.null(DT))
+    
+
    
-      rhandsontable(ST, rowHeaders = NULL) %>% 
+      rhandsontable(DT, rowHeaders = NULL) %>% 
       hot_col(col = "Model_Name", readOnly = TRUE) %>% 
       hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
       hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
@@ -51,49 +55,75 @@ function(input, output) {
   }) 
   
   output$stocksselected <- renderRHandsontable({
-    # Get names and add 
-    
-
-      
-    isolate(    ST <- models[["stocks"]] )
-    
-    if(any(ST$selected == TRUE))  {  #update table save results
-      print("some selected")
-      if (!is.null(input$stocksselected)) {
-        
-       MT = setDT(hot_to_r(input$stocksselected))
-       print(MT)
-       print(which(ST$selected))
-       print( models[["port"]])
-     models[["port"]][which(ST$selected),] <- MT[,-1]
-       print(models[["port"]][which(ST$selected),])
-       
-      }
-   
-
-      lselected <- ST[,c("Model_Name","selected")]
-      DMT <- cbind(lselected,models[["port"]])
-      DMT <- DMT %>% filter(selected == TRUE)
-      DMT <- DMT %>% select(-selected)
-
-      #DT::datatable(MT)
-      rhandsontable(DMT, rowHeaders = NULL) 
-      
-      
-      
-      
-    } else{  #deal with an empty table
-      print("non selected") 
-     NULL
-      }
-      
 
 
-   
-   
- 
+    ST <-values[["stocks"]]
+
+    if (any(ST$selected == TRUE)) {
+
+      ST <- ST[which(ST$selected == TRUE),-(c(2,3,4))]
+
+      rhandsontable(ST, rowHeaders = NULL)
+
+
+  } else{  #deal with an empty table
+         print("non selected")
+      NULL
+
+  }
   })
- 
+
+
+
+  # output$stocksselected <- renderRHandsontable({
+  #   # Get names and add
+  #
+  #
+  #
+  #       ST <- models[["stocks"]]
+  #
+  #   if(any(ST$selected == TRUE))  {  #update table save results
+  #     print("some selected")
+  #
+  #     if (!is.null(input$stocksselected)) {
+  #
+  #
+  #      MT = setDT(hot_to_r(input$stocksselected))
+  #      print(MT)
+  #      print(which(ST$selected))
+  #      print( portfolio[["port"]])
+  #      print(  portfolio[["port"]][which(ST$selected),] )
+  #      portfolio[["port"]][which(ST$selected),] <- MT[,-1]
+  #      print(portfolio[["port"]][which(ST$selected),])
+  #
+  #     }
+  #
+  #
+  #     lselected <- ST[,c("Model_Name","selected")]
+  #     DMT <- cbind(lselected,portfolio[["port"]])
+  #     DMT <- DMT %>% filter(selected == TRUE)
+  #     DMT <- DMT %>% select(-selected)
+  #
+  #     #DT::datatable(MT)
+  #     rhandsontable(DMT, rowHeaders = NULL)
+  #
+  #
+  #
+  #
+  #   } else{  #deal with an empty table
+  #     print("non selected")
+  #    NULL
+  #     }
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  #
+  # })
+  #
   
   
    
