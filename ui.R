@@ -17,15 +17,15 @@ fixedPage(
   hr(),
   fluidRow(
   
-    column(5,
+    column(7,
   
   
-           rHandsontableOutput("stocks",height = 200,width=300)
+           rHandsontableOutput("stocks",height = 200,width=400)
   ),
   
   column(4,
          
-         rHandsontableOutput("stocksselected",height = 200,width=350)
+         rHandsontableOutput("stocksselected",height = 200,width=200)
         
   ) 
   

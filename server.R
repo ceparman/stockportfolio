@@ -15,31 +15,39 @@ function(input, output) {
              Fee = c(.004,.0036,.007,.008,.01,.004,.0036,.007),
              selected <-data.frame(selected =  rep(FALSE,length(names))),
              leverage = data.frame(leverage =  rep(1,length(names))),
-             weights = data.frame( Weight = rep(0,length(names))),
+             weights = data.frame( Weight = rep(.1,length(names))),
              stringsAsFactors = FALSE)
   
- # weights <- data.frame( Weight = rep(0,nrow(Models)))
-  
-  #selected <-data.frame(selected =  rep(FALSE,nrow(Models)))
-  
-  #leverage <-data.frame(leverage =  rep(1,nrow(Models)))
+
   
   values = reactiveValues(stocks = Models)
     
- # portfolio =  list( port = cbind(leverage,weights))
+  reset <- FALSE
   
+   observeEvent(input$reset,{
+     
+     
+    values[["stocks"]]$selected <- rep(FALSE,length( values[["stocks"]]$selected))
+       
+  
+     
+   reset <<- TRUE
+  })
+  
+
   
   output$stocks <- renderRHandsontable({
 
   
     
     DT = NULL
-    if (!is.null(input$stocks)) {
+    if (!is.null(input$stocks) & !reset ) {
       DT = setDT(hot_to_r(input$stocks))
       
       values[["stocks"]] = DT
     } else if (!is.null(values[["stocks"]])) {
       DT = values[["stocks"]]
+      reset <<- FALSE
     }
     
     if (!is.null(DT))
@@ -63,7 +71,10 @@ function(input, output) {
 
       ST <- ST[which(ST$selected == TRUE),-(c(2,3,4))]
 
-      rhandsontable(ST, rowHeaders = NULL)
+      rhandsontable(ST, rowHeaders = NULL) %>%
+      hot_col(col = "Model_Name", readOnly = TRUE) %>% 
+        hot_col(col = "leverage", format="0.00",readOnly = TRUE) %>%  
+        hot_col(col = "Weight", format="%0.00",readOnly = TRUE)
 
 
   } else{  #deal with an empty table
@@ -75,57 +86,6 @@ function(input, output) {
 
 
 
-  # output$stocksselected <- renderRHandsontable({
-  #   # Get names and add
-  #
-  #
-  #
-  #       ST <- models[["stocks"]]
-  #
-  #   if(any(ST$selected == TRUE))  {  #update table save results
-  #     print("some selected")
-  #
-  #     if (!is.null(input$stocksselected)) {
-  #
-  #
-  #      MT = setDT(hot_to_r(input$stocksselected))
-  #      print(MT)
-  #      print(which(ST$selected))
-  #      print( portfolio[["port"]])
-  #      print(  portfolio[["port"]][which(ST$selected),] )
-  #      portfolio[["port"]][which(ST$selected),] <- MT[,-1]
-  #      print(portfolio[["port"]][which(ST$selected),])
-  #
-  #     }
-  #
-  #
-  #     lselected <- ST[,c("Model_Name","selected")]
-  #     DMT <- cbind(lselected,portfolio[["port"]])
-  #     DMT <- DMT %>% filter(selected == TRUE)
-  #     DMT <- DMT %>% select(-selected)
-  #
-  #     #DT::datatable(MT)
-  #     rhandsontable(DMT, rowHeaders = NULL)
-  #
-  #
-  #
-  #
-  #   } else{  #deal with an empty table
-  #     print("non selected")
-  #    NULL
-  #     }
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  # })
-  #
-  
-  
    
   output$performance <- DT::renderDataTable(
     # generate bins based on input$bins from ui.R
@@ -151,16 +111,18 @@ function(input, output) {
   output$pie <- renderPlot({
     
     
+      DT <-   values[["stocks"]]
+      if (any(DT$selected == TRUE)){
+      
+      DT <- DT[which(DT$selected == TRUE),]
  
-      group = c("Stock 1", "Stock 2", "Stock3")
-      value = c(25, 25, 50)
+      group = DT$Model_Name
+      value = DT$Weight
   
     
-   # bp<- ggplot(df, aes(x="", y=value, fill=group))+
-    #  geom_bar(width = 1, stat = "identity")
-     # pie <- bp + coord_polar("y", start=0)
+  
     pie3D(value,labels=group,theta = pi/3)
-    
+      } else NULL
     
   
     
