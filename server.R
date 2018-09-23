@@ -52,7 +52,7 @@ function(input, output) {
       hot_col(col = "Fee", format="%0.00",readOnly = TRUE)
 
     
-  }) 
+  })   %>% debounce(1000)
   
   output$stocksselected <- renderRHandsontable({
 
