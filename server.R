@@ -123,10 +123,34 @@ function(input, output) {
   ########## performance results ##################
   
   
-  
+  observeEvent(input$run,{
+    
+    ## get names, remove columns or ser weights to zero
+    
+    DT <- values[["stocks"]]
+    
+    ss <- (DT$Model_Name[which(DT$selected == TRUE)])
+    
+    lr<- returns[,ss]
+    
+    weights <- (DT$Weight[which(DT$selected == TRUE)])
+    
+    print(weights)
+    print(head(lr))
+   pf_bh <- Return.portfolio(lr, weights = weights, verbose = TRUE )
+   
+    
+   
+   
+   
+  })
   
    
- 
+  output$performance <- DT::renderDataTable(
+    # generate bins based on input$bins from ui.R
+    mtcars[1:10,1:8] 
+    ,options = list(lengthChange = FALSE,dom = 't')
+  )
   
   
   
