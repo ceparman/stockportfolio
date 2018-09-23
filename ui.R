@@ -17,31 +17,32 @@ fixedPage(
   hr(),
   fluidRow(
   
-    column(7,
+    column(8,rHandsontableOutput("stocks",height = 200,width=400))
   
-  
-           rHandsontableOutput("stocks",height = 200,width=400)
-  ),
-  
-  column(4,
-         
-         rHandsontableOutput("stocksselected",height = 200,width=200)
-        
-  ) 
-  
+   
   
    ), #table row
   
-  hr()  ,
-  fixedRow(
- 
-  column(6,offset=3,
-         plotOutput("pie"))
+  hr(),
+  
+  fluidRow(
+    column(6,
+           
+           verticalLayout(
+           rHandsontableOutput("stocksselected",width=250),
+           textOutput("weight_sum")
+            )) ,
+    column(5, plotOutput("pie"),height = 200,height = 200)
+    
     
     
   ), #pierow
   
   hr(),
+  fluidRow(
+  column(width=2,offset=4,actionButton("run", "Calculate Porfolio Performance")
+  )
+  ),
   fixedRow(
     
     column(width=12,
