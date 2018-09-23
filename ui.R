@@ -43,6 +43,7 @@ fixedPage(
   column(width=2,offset=4,actionButton("run", "Calculate Porfolio Performance")
   )
   ),
+  hr(),
   fixedRow(
     
     column(width=12,
@@ -81,6 +82,16 @@ fixedPage(
         ) #comparison table
         
   
+  ),
+  fixedRow(
+    
+    column(10,
+           
+           
+           DT::dataTableOutput("drawdowns")
+    ) #comparison table
+    
+    
   )
   
   

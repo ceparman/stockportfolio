@@ -137,59 +137,46 @@ function(input, output) {
     
     print(weights)
     print(head(lr))
-   pf_bh <- Return.portfolio(lr, weights = weights, verbose = TRUE )
-   
+    pf <- Return.portfolio(lr, weights = weights, verbose = TRUE )
     
-   
-   
-   
-  })
-  
-   
-  output$performance <- DT::renderDataTable(
-    # generate bins based on input$bins from ui.R
-    mtcars[1:10,1:8] 
-    ,options = list(lengthChange = FALSE,dom = 't')
-  )
-  
-  
-  
-  
-  output$performance <- DT::renderDataTable(
-    # generate bins based on input$bins from ui.R
-    mtcars[1:10,1:8] 
-    ,options = list(lengthChange = FALSE,dom = 't')
-  )
-  
-  output$correlation <- DT::renderDataTable(
-    # generate bins based on input$bins from ui.R
-    mtcars[1:10,1:8] 
-    ,options = list(lengthChange = FALSE,dom = 't')
-  )
-  
-  
-  output$comparison <- DT::renderDataTable(
-    # generate bins based on input$bins from ui.R
-    mtcars[1:10,1:8] 
-    ,options = list(lengthChange = FALSE,dom = 't')
-  )
-  
-  
-  output$plot <- renderPlot({
+    names(pf$returns) <- "Portfolio"
     
-    
-    df<-data.frame(x=runif(100, min = 0, max = 1),
-         y = 1:100
+    output$plot <- renderPlot({
+      
+      
+      chart.CumReturns(pf$returns)
+      
+      
+    })
+   
+    output$performance <- DT::renderDataTable(
+      # generate bins based on input$bins from ui.R
+      table.CalendarReturns(pf$returns)
     )
+    
+    output$correlation <- DT::renderDataTable(
+      
+    
+      
+      round(cor(cbind(pf$returns,returns)),3)
+    )
+    
+    output$comparison <- DT::renderDataTable(
+      # generate bins based on input$bins from ui.R
+      mtcars[1:10,1:8] 
+      ,options = list(lengthChange = FALSE,dom = 't')
+    )
+    
+    output$drawdowns <- DT::renderDataTable(
+      # generate bins based on input$bins from ui.R
+      table.Drawdowns(pf_bh$returns)
+    )
+    
+   
+  }) ## end performance
+  
 
-    
-     plot<- ggplot(df, aes(x=x, y=y)) + geom_line()
-    
-    
-    plot
-    
-    
-  })
+
   
   
   
