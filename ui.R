@@ -11,7 +11,13 @@ fixedPage(
   column(4,
          actionButton("reset","Reset Portfolio")
          
+  ),
+  column(4,
+        selectInput("period","Rebalancing Frequency",
+                    choices = c("years","quarters", "months"))
+         
   )
+  
   
   ),
   hr(),

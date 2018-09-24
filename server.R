@@ -5,13 +5,19 @@ library(rhandsontable)
 library(data.table)
 library(dplyr)
 library(PerformanceAnalytics)
+library(tidyquant)
 
 # Define server logic required to draw a histogram
 function(input, output) {
   
-  returns = readRDS("returns.rds")
+  returns <-readRDS("returns.rds")
+  
   Names <- attr(returns,"dimnames")[[2]]
-  #Names <- unique(returns$Name)[order(unique(returns$Name))]
+
+   spx     <- readRDS("spx_returns.rds")
+  
+ 
+  
   Models <- data.frame("Model_Name" = Names, 
             # Minimum = c(100000,120000,140000,159000,100000,120000),
             # Fee = c(.004,.0036,.007,.008,.01,.004),
@@ -125,9 +131,13 @@ function(input, output) {
   
   observeEvent(input$run,{
     
-    ## get names, remove columns or ser weights to zero
-    
+    ## get names, remove columns or set weights to zero
     DT <- values[["stocks"]]
+    weights <- (DT$Weight[which(DT$selected == TRUE)])
+    
+    if (sum(weights) == 1){ 
+    
+ 
     
     ss <- (DT$Model_Name[which(DT$selected == TRUE)])
     
@@ -137,7 +147,11 @@ function(input, output) {
     
     print(weights)
     print(head(lr))
-    pf <- Return.portfolio(lr, weights = weights, verbose = TRUE )
+    period <- input$period
+    
+    print(period)
+    
+    pf <- Return.portfolio(lr, weights = weights,rebalance_on = period ,verbose = TRUE )
     
     names(pf$returns) <- "Portfolio"
     
@@ -169,13 +183,16 @@ function(input, output) {
     
     output$drawdowns <- DT::renderDataTable(
       # generate bins based on input$bins from ui.R
-      table.Drawdowns(pf_bh$returns)
+      table.Drawdowns(pf$returns)
     )
-    
    
+     } else showModal(modalDialog(
+       title = "Portfolio Error",
+       "Weights must add to 100%"
+     ))
+    
   }) ## end performance
   
-
 
   
   
