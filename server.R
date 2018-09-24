@@ -7,6 +7,8 @@ library(dplyr)
 library(PerformanceAnalytics)
 library(tidyquant)
 
+source("comparion_stats.R")
+
 # Define server logic required to draw a histogram
 function(input, output) {
   
@@ -186,15 +188,23 @@ function(input, output) {
      cols <- ncol(c) 
      
       rhandsontable(c) %>%
-      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE)
+      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) %>%
+      hot_cols(c(200,100,100))  
     
     })
   
-    output$comparison <- DT::renderDataTable(
-      # generate bins based on input$bins from ui.R
-      mtcars[1:10,1:8] 
-      ,options = list(lengthChange = FALSE,dom = 't')
-    )
+    output$comparison <- renderRHandsontable({
+     
+    psc <- comp_stats(pf,spx)  
+    print(psc)
+    
+    
+    rhandsontable(psc,rowHeaderWidth = 200) %>%
+      hot_col(col = 1:2, format="%0.00",readOnly = TRUE)
+    
+    
+    
+    })
     
     output$drawdowns <- DT::renderDataTable(
       # generate bins based on input$bins from ui.R

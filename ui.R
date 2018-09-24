@@ -69,6 +69,20 @@ fixedPage(
   ) , #performance table
     
   hr(),
+  h2("Performance Statistics Comparison"), 
+  
+  fixedRow(
+    
+    column(10,
+           
+           
+           rHandsontableOutput("comparison")
+    ) #comparison table
+    
+    
+  ),
+  
+  hr(),
   h2("Correlation Matrix"), 
     fluidRow(
       
@@ -81,16 +95,7 @@ fixedPage(
       
      
       
-       fixedRow(
-        
-        column(10,
-               
-               
-               DT::dataTableOutput("comparison")
-        ) #comparison table
-        
-  
-  ),
+      
   fixedRow(
     
     column(10,
