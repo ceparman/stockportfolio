@@ -94,16 +94,19 @@ fixedPage(
       ), #correlation table
       
      
-      
+  hr(),
+  h2("Top Drawdowns"),      
       
   fixedRow(
     
     column(10,
            
            
-           DT::dataTableOutput("drawdowns")
-    ) #comparison table
+           rHandsontableOutput("drawdowns")
+    ),#Drawdowns table
     
+    hr(),
+    hr()
     
   )
   

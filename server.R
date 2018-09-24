@@ -88,7 +88,7 @@ function(input, output) {
 
 
   } else{  #deal with an empty table
-         print("non selected")
+      #   print("non selected")
       NULL
 
   }
@@ -187,16 +187,16 @@ function(input, output) {
      c<- round(cor(cbind(pf$returns,returns)),3)
      cols <- ncol(c) 
      
-      rhandsontable(c) %>%
-      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) %>%
-      hot_cols(c(200,100,100))  
+      rhandsontable(c,rowHeaderWidth = 100) %>%
+      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) 
+      
     
     })
   
     output$comparison <- renderRHandsontable({
      
     psc <- comp_stats(pf,spx)  
-    print(psc)
+    #print(psc)
     
     
     rhandsontable(psc,rowHeaderWidth = 200) %>%
@@ -206,10 +206,15 @@ function(input, output) {
     
     })
     
-    output$drawdowns <- DT::renderDataTable(
+    output$drawdowns <-  renderRHandsontable({
       # generate bins based on input$bins from ui.R
-      table.Drawdowns(pf$returns)
-    )
+      tdd<-table.Drawdowns(pf$returns)
+      tdd<-tdd[ ,c(4,5,6,1,2,3)]
+      colnames(tdd) <- c("Depth","Lenght of Drawdown","Months to Recover",
+                         "Start","Peak","End")
+      rhandsontable(tdd) %>% hot_cols(readOnly = TRUE)
+      
+      })
    
      } else showModal(modalDialog(
        title = "Portfolio Error",
