@@ -17,14 +17,24 @@ saveRDS(returns, "returns.rds")
 to <- index(tail(returns,1))
 month(to) <- month(to) +1
 
-spx <- tidyquant::tq_get("^GSPC",from =  index(returns[1,]), to =to )
+from <- index(returns[1,])
+month(from) <- month(from) - 1
+
+spx <- tidyquant::tq_get("^GSPC",from =  from, to =to )
+spx <- tidyquant::tq_get("^GSPC",from =  from, to =to )
 
 spx$Date<-as.Date(spx$date, format("%m/%d/%Y"))
 spx$date <- NULL
 spx <- spx[order(spx$Date), ]
 spx <- as.xts(spx[, 4], order.by = spx$Date)
 
-spx_returns<-to.monthly(spx)
+
+
+spx_returns<-Return.calculate(to.monthly(spx))$ spx.Close
+
+
+names(spx_returns) <- "SPX"
+spx_returns <- spx_returns[-1,]
 
 saveRDS(spx_returns, "spx_returns.rds")
 

@@ -14,7 +14,7 @@ function(input, output) {
   
   Names <- attr(returns,"dimnames")[[2]]
 
-   spx     <- readRDS("spx_returns.rds")
+   spx  <- readRDS("spx_returns.rds")
   
  
   
@@ -144,14 +144,17 @@ function(input, output) {
     lr<- returns[,ss]
     
     weights <- (DT$Weight[which(DT$selected == TRUE)])
-    
-    print(weights)
-    print(head(lr))
+   
     period <- input$period
     
-    print(period)
+    
     
     pf <- Return.portfolio(lr, weights = weights,rebalance_on = period ,verbose = TRUE )
+   
+  
+     spx <-  Return.portfolio(spx,weights = 1,rebalance_on = period,verbose = TRUE )
+   
+    
     
     names(pf$returns) <- "Portfolio"
     
@@ -163,18 +166,30 @@ function(input, output) {
       
     })
    
-    output$performance <- DT::renderDataTable(
-      # generate bins based on input$bins from ui.R
-      table.CalendarReturns(pf$returns)
-    )
-    
-    output$correlation <- DT::renderDataTable(
+    output$performance <-  renderRHandsontable({
+      cal<- table.CalendarReturns(pf$returns)
+      colnames(cal)[13] <- "YTD"  
       
-    
+      yspx <- table.CalendarReturns(spx$returns)
       
-      round(cor(cbind(pf$returns,returns)),3)
-    )
+      cal$"S&P 500" <- yspx$portfolio.returns
+      cal <- cal/100
+      rhandsontable(
+        cal
+      ) %>% hot_col(col = 1:14, format="%0.00",readOnly = TRUE)
+    })
     
+    output$correlation <- renderRHandsontable({
+
+      
+     c<- round(cor(cbind(pf$returns,returns)),3)
+     cols <- ncol(c) 
+     
+      rhandsontable(c) %>%
+      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE)
+    
+    })
+  
     output$comparison <- DT::renderDataTable(
       # generate bins based on input$bins from ui.R
       mtcars[1:10,1:8] 

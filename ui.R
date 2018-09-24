@@ -50,30 +50,32 @@ fixedPage(
   )
   ),
   hr(),
-  fixedRow(
+  h2("Porfolio Chart"),
+  fluidRow(
     
     column(width=12,
            plotOutput("plot",width = "100%"))
     
     
   ),
-  
-  fixedRow(
+  hr(),
+  h2("Porfolio Performance"),
+  fluidRow(
     
-    column(10,
-           
-           
-           DT::dataTableOutput("performance")
+    column(11,
+
+           rHandsontableOutput("performance")
     )
   ) , #performance table
     
-    
-    fixedRow(
+  hr(),
+  h2("Correlation Matrix"), 
+    fluidRow(
       
       column(10,
              
              
-             DT::dataTableOutput("correlation")
+             rHandsontableOutput("correlation")
       )
       ), #correlation table
       
