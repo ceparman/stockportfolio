@@ -210,9 +210,11 @@ function(input, output) {
       # generate bins based on input$bins from ui.R
       tdd<-table.Drawdowns(pf$returns)
       tdd<-tdd[ ,c(4,5,6,1,2,3)]
-      colnames(tdd) <- c("Depth","Lenght of Drawdown","Months to Recover",
+      colnames(tdd) <- c("Depth","Length of Drawdown","Months to Recover",
                          "Start","Peak","End")
-      rhandsontable(tdd) %>% hot_cols(readOnly = TRUE)
+      rhandsontable(tdd,contextMenu = FALSE) %>% hot_cols(readOnly = TRUE) %>%
+        hot_col(1,format="%0.000") %>%
+        hot_col(2:3, format = "00")
       
       })
    

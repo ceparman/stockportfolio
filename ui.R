@@ -103,12 +103,13 @@ fixedPage(
            
            
            rHandsontableOutput("drawdowns")
-    ),#Drawdowns table
+    ) #Drawdowns table
     
-    hr(),
-    hr()
+   
     
-  )
+  ),
+  hr(),
+  hr()
   
   
   
