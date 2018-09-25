@@ -1,6 +1,7 @@
 library(shiny)
 library(shinydashboard)
 library(rhandsontable)
+library(plotly)
 
 # Define UI for application that draws a histogram
 fixedPage(
@@ -54,7 +55,7 @@ fixedPage(
   fluidRow(
     
     column(width=12,
-           plotOutput("plot",width = "100%"))
+           plotlyOutput("plot",width = "100%"))
     
     
   ),

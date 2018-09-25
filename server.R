@@ -4,8 +4,10 @@ library(plotrix)
 library(rhandsontable)
 library(data.table)
 library(dplyr)
+library(broom)
 library(PerformanceAnalytics)
-library(tidyquant)
+library(plotly)
+
 
 source("comparion_stats.R")
 
@@ -160,11 +162,15 @@ function(input, output) {
     
     names(pf$returns) <- "Portfolio"
     
-    output$plot <- renderPlot({
+    
+    output$plot <- renderPlotly({
       
+     
+      cumulative <- cbind(cumprod(1+spx$returns)-1,cumprod(1+pf$returns)-1)
+      index(cumulative) <- as.Date(index(cumulative))
+      p<- tidy(cumulative) %>% ggplot(aes(x=index,y=value, color=series)) + geom_line()
       
-      chart.CumReturns(pf$returns)
-      
+      ggplotly(p)
       
     })
    

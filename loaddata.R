@@ -20,8 +20,7 @@ month(to) <- month(to) +1
 from <- index(returns[1,])
 month(from) <- month(from) - 1
 
-spx <- tidyquant::tq_get("^GSPC",from =  from, to =to )
-spx <- tidyquant::tq_get("^GSPC",from =  from, to =to )
+
 
 spx$Date<-as.Date(spx$date, format("%m/%d/%Y"))
 spx$date <- NULL
