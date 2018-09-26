@@ -156,21 +156,35 @@ function(input, output) {
     pf <- Return.portfolio(lr, weights = weights,rebalance_on = period ,verbose = TRUE )
    
   
-     spx <-  Return.portfolio(spx,weights = 1,rebalance_on = period,verbose = TRUE )
+   spx <-  Return.portfolio(spx,weights = 1,rebalance_on = period,verbose = TRUE )
    
     
     
-    names(pf$returns) <- "Portfolio"
+   # names(pf$returns) <- "Portfolio"
     
     
     output$plot <- renderPlotly({
       
-     
-      cumulative <- cbind(cumprod(1+spx$returns)-1,cumprod(1+pf$returns)-1)
-      index(cumulative) <- as.Date(index(cumulative))
-      p<- tidy(cumulative) %>% ggplot(aes(x=index,y=value, color=series)) + geom_line()
+  
       
-      ggplotly(p)
+      spx_cum <-  cumprod(1+spx$returns)-1
+      pf_cum  <-  cumprod(1+pf$returns)-1
+      
+      
+      df<- data.frame( date = index(pf_cum), pf = pf_cum$portfolio.returns,spx_cum$portfolio.returns)
+      
+      names(df) <- c("date","pf","sp")
+      
+      plot_ly(df,x=~date) %>%
+        add_trace(y = ~pf, name = 'Custom Porfolio',mode = 'lines',type="scatter")   %>%
+        add_trace(y = ~sp, name = 'S&P 500',mode = 'lines',type="scatter") %>%
+        layout(title = "Portfolio Returns",
+               xaxis = list(title = ""),
+               yaxis = list(title = "Return")) %>%
+        layout(legend = list(orientation = 'h')) %>%
+        layout(yaxis = list(tickformat = "%"))
+      
+      
       
     })
    
