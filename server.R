@@ -4,9 +4,9 @@ library(plotrix)
 library(rhandsontable)
 library(data.table)
 library(dplyr)
-library(broom)
 library(PerformanceAnalytics)
 library(plotly)
+
 
 
 source("comparion_stats.R")
@@ -72,7 +72,7 @@ function(input, output) {
       hot_col(col = "Weight", format="%0.00")
 
     
-  })   %>% debounce(1000)
+  })   %>% debounce(100)
   
   output$stocksselected <- renderRHandsontable({
 
@@ -105,12 +105,12 @@ function(input, output) {
     
     w <- ST[which(ST$selected == TRUE),"Weight"]
     paste0("Total Weight ", sum(w)*100, " %")
-  } else NULL
+  } else   paste0("Total Weight ", 0, " %")
   })
  
   
   
-  output$pie <- renderPlot({
+  output$pie <-  renderPlotly({
     
     
     DT <-   values[["stocks"]]
@@ -121,10 +121,14 @@ function(input, output) {
       group = DT$Model_Name
       value = DT$Weight
       
+
+      plot_ly(labels = ~group, values = ~value, type = 'pie',
+              textinfo = 'label', hoverinfo = "none", showlegend = FALSE) %>%
+        layout(title = 'Portfolio Allocations')
       
       
-      pie3D(value,labels=group,theta = pi/3,main ="Allocations")
-    } else NULL
+      
+    } else plotly_empty()
     
     
     
