@@ -47,7 +47,7 @@ fixedPage(
  
 hr(),
  
-  h2("Porfolio Chart"),
+  h2("Portfolio Chart"),
   fluidRow(
     
     column(width=12,

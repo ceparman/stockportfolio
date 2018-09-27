@@ -215,12 +215,19 @@ function(input, output) {
     })
     
     output$correlation <- renderRHandsontable({
-
-      
+    
+    
+    
+   
      c<- round(cor(cbind(pf$returns,returns)),3)
      cols <- ncol(c) 
      
-      rhandsontable(c,rowHeaderWidth = 100) %>%
+     c[upper.tri(c)] <- NA
+     
+     dimnames(c)[[1]][1] <- "Custom Portfolio"
+     dimnames(c)[[2]][1] <- "Custom Portfolio"
+     
+      rhandsontable(c,rowHeaderWidth = 150) %>%
       hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) 
       
     
@@ -230,7 +237,7 @@ function(input, output) {
      
     psc <- comp_stats(pf,spx)  
     #print(psc)
-    
+    colnames(psc) <- c("Custom Portfolio","S&P500")
     
     rhandsontable(psc,rowHeaderWidth = 200) %>%
       hot_col(col = 1:2, format="%0.00",readOnly = TRUE)
