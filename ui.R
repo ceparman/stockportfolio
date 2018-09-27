@@ -33,27 +33,20 @@ fixedPage(
              )
     
     ), 
-    column(5,plotlyOutput("pie",width = "100%") )
-    
-   # column(6,
-           
-      #     verticalLayout(
-   #          rHandsontableOutput("stocksselected",width=250),
- #            textOutput("weight_sum")
- #          )) 
+    column(5,plotlyOutput("pie",width = "100%") ),
+
   
-   
-  
-   ), #table row
-  
-  hr(),
+ 
   
 
   fluidRow(
   column(width=2,offset=4,actionButton("run", "Calculate Porfolio Performance")
   )
   ),
-  hr(),
+
+ 
+hr(),
+ 
   h2("Porfolio Chart"),
   fluidRow(
     
@@ -109,30 +102,14 @@ fixedPage(
            rHandsontableOutput("drawdowns")
     ) #Drawdowns table
     
-   
-    
   ),
   hr(),
   hr()
   
-  
+  ) 
   
 )
-      #reset button
-      #pdf button
-    
-
-    # Show a plot of the generated distribution
-
-     #table for picking stocks
-      #pie chart
-      #graph of results
-      # monthly performace table
-      # Comaprision stats
-      #corelation matrix
-      #top draw downs
-
-
+      
 
 
 

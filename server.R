@@ -39,9 +39,18 @@ function(input, output) {
      
      
     values[["stocks"]]$selected <- rep(FALSE,length( values[["stocks"]]$selected))
-       
-  
-     
+    values[["stocks"]]$Weight <- rep(.1,length( values[["stocks"]]$selected)) 
+      
+    DT = values[["stocks"]]
+    
+    
+    output$stocks <- renderRHandsontable({
+    rhandsontable(DT, rowHeaders = NULL) %>% 
+      hot_col(col = "Model_Name", readOnly = TRUE) %>% 
+      #   hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
+      #   hot_col(col = "Fee", format="%0.00",readOnly = TRUE) %>%  
+      hot_col(col = "Weight", format="%0.00")
+    })
    reset <<- TRUE
   })
   
