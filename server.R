@@ -11,7 +11,7 @@ library(plotly)
 
 source("comparion_stats.R")
 
-# Define server logic required to draw a histogram
+
 function(input, output) {
   
   returns <-readRDS("returns.rds")
@@ -25,9 +25,10 @@ function(input, output) {
   Models <- data.frame("Model_Name" = Names, 
             # Minimum = c(100000,120000,140000,159000,100000,120000),
             # Fee = c(.004,.0036,.007,.008,.01,.004),
-             selected <-data.frame(selected =  rep(FALSE,length(Names))),
+             selected <-data.frame(selected =  rep(TRUE,length(Names))),
           #   leverage = data.frame(leverage =  rep(1,length(Names))),
-             weights = data.frame( Weight = rep(.1,length(Names))),
+          #   weights = data.frame( Weight = rep(1/length(Names),length(Names))),
+              weights = data.frame( Weight = c(.2,.3,.2,.1,.1,.1)),
              stringsAsFactors = FALSE)
   
  

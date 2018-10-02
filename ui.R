@@ -8,11 +8,11 @@ library(shinycssloaders)
 fixedPage(
 
   # Application title
-  titlePanel("Portfolio Returns"),
+  titlePanel("Portfolio Returns Explorer"),
   hr(),
   fluidRow(
  
-  column(5,
+  column(3,
          
          
          verticalLayout(
@@ -21,13 +21,14 @@ fixedPage(
              selectInput("period","Rebalancing Frequency",
                          choices = c("years","quarters", "months")),
              
-              rHandsontableOutput("stocks"),#,height = 200,width=400),
+              rHandsontableOutput("stocks"),
              textOutput("weight_sum"),
+            
              actionButton("reset","Reset Portfolio")
            ),  
-               
+           tags$p(),  
            actionButton("run", "Calculate Porfolio Performance"),
-           
+           tags$p(),  
            plotlyOutput("pie",width = "100%")
            
 
@@ -35,7 +36,7 @@ fixedPage(
   ) ,
  
 
-  column(width=7,
+  column(width=9,
            
            plotlyOutput("plot",width = "100%"),
            
