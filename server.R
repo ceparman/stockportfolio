@@ -75,7 +75,7 @@ function(input, output) {
     
 
    
-      rhandsontable(DT, rowHeaders = NULL) %>% 
+      rhandsontable(DT, rowHeaders = NULL,contextMenu = FALSE) %>% 
       hot_col(col = "Model_Name", readOnly = TRUE) %>% 
    #   hot_col(col = "Minimum", format="$,0",readOnly = TRUE) %>%  
    #   hot_col(col = "Fee", format="%0.00",readOnly = TRUE) %>%  
@@ -93,7 +93,7 @@ function(input, output) {
 
       ST <- ST[which(ST$selected == TRUE),-(c(2))]
 
-      rhandsontable(ST, rowHeaders = NULL) %>%
+      rhandsontable(ST, rowHeaders = NULL,contextMenu = FALSE) %>%
       hot_col(col = "Model_Name", readOnly = TRUE) %>% 
         hot_col(col = "leverage", format="0.00",readOnly = TRUE) %>%  
         hot_col(col = "Weight", format="%0.00",readOnly = TRUE)
@@ -219,7 +219,7 @@ function(input, output) {
       
       cal$"S&P 500" <- yspx$portfolio.returns
       cal <- cal/100
-      rhandsontable(cal) %>% 
+      rhandsontable(cal,contextMenu = FALSE) %>% 
       
         hot_cols(renderer = "
            function (instance, td, row, col, prop, value, cellProperties) {
@@ -249,7 +249,7 @@ function(input, output) {
      dimnames(c)[[1]][1] <- "Custom Portfolio"
      dimnames(c)[[2]][1] <- "Custom Portfolio"
      
-      rhandsontable(c,rowHeaderWidth = 150) %>%
+      rhandsontable(c,contextMenu = FALSE,rowHeaderWidth = 150) %>%
       hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) %>%
       hot_cols(renderer = "
            function (instance, td, row, col, prop, value, cellProperties) {
@@ -271,7 +271,7 @@ function(input, output) {
     #print(psc)
     colnames(psc) <- c("Custom Portfolio","S&P500")
     
-    rhandsontable(psc,rowHeaderWidth = 200) %>%
+    rhandsontable(psc,rowHeaderWidth = 200,contextMenu = FALSE) %>%
       hot_col(col = 1:2, format="%0.00",readOnly = TRUE)
     
     
