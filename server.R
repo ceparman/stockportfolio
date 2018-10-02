@@ -149,6 +149,7 @@ function(input, output) {
   
   observeEvent(input$run,{
     
+    print(input$run)
     ## get names, remove columns or set weights to zero
     DT <- values[["stocks"]]
     weights <- (DT$Weight[which(DT$selected == TRUE)])

@@ -35,9 +35,12 @@ fixedPage(
         )
   ) ,
  
+  
 
   column(width=9,
-           
+ 
+         conditionalPanel( condition = "input.run >0",
+          
            plotlyOutput("plot",width = "100%"),
            
            hr(),
@@ -63,12 +66,12 @@ fixedPage(
 
            
            rHandsontableOutput("drawdowns")
-
+   )
+  )
+ 
   ) ,
   hr(),
   hr()
-  
-  ) 
   
 )
       
