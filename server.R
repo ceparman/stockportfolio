@@ -26,7 +26,7 @@ function(input, output) {
             # Minimum = c(100000,120000,140000,159000,100000,120000),
             # Fee = c(.004,.0036,.007,.008,.01,.004),
              selected <-data.frame(selected =  rep(FALSE,length(Names))),
-             leverage = data.frame(leverage =  rep(1,length(Names))),
+          #   leverage = data.frame(leverage =  rep(1,length(Names))),
              weights = data.frame( Weight = rep(.1,length(Names))),
              stringsAsFactors = FALSE)
   
