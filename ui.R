@@ -28,8 +28,7 @@ fixedPage(
            ),  
            tags$p(),  
            actionButton("run", "Calculate Porfolio Performance"),
-           tags$p(),  
-           plotlyOutput("pie",width = "100%")
+           plotlyOutput("pie",width = "90%")
            
 
         )
@@ -66,7 +65,7 @@ fixedPage(
 
            
            rHandsontableOutput("drawdowns")
-   )
+   ),style='border-left: 1px solid black'
   )
  
   ) ,

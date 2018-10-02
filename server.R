@@ -131,10 +131,18 @@ function(input, output) {
       group = DT$Model_Name
       value = DT$Weight
       
+      m <- list(
+        l = 10,
+        r = 50,
+        b = 10,
+        t = 0,
+        pad = 0
+      )
+      
 
       plot_ly(labels = ~group, values = ~value, type = 'pie',
-              textinfo = 'label', hoverinfo = "none", showlegend = FALSE) %>%
-        layout(title = 'Portfolio Allocations')
+              textinfo = 'label', hoverinfo = "none", showlegend = FALSE)%>%
+       layout(autosize = F, width = 300, height = 300,margin = m )
       
       
       
@@ -211,9 +219,21 @@ function(input, output) {
       
       cal$"S&P 500" <- yspx$portfolio.returns
       cal <- cal/100
-      rhandsontable(
-        cal
-      ) %>% hot_col(col = 1:14, format="%0.00",readOnly = TRUE)
+      rhandsontable(cal) %>% 
+      
+        hot_cols(renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+              if (value < 0) {
+              td.style.background = 'pink';
+             }
+           }") %>%
+      hot_col(col = 1:14, format="%0.00",readOnly = TRUE) 
+      
+      
+      
+      
+      
     })
     
     output$correlation <- renderRHandsontable({
@@ -230,7 +250,17 @@ function(input, output) {
      dimnames(c)[[2]][1] <- "Custom Portfolio"
      
       rhandsontable(c,rowHeaderWidth = 150) %>%
-      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) 
+      hot_col(col = 1:cols, format="%0.00",readOnly = TRUE) %>%
+      hot_cols(renderer = "
+           function (instance, td, row, col, prop, value, cellProperties) {
+             Handsontable.renderers.NumericRenderer.apply(this, arguments);
+             if (row == col) {
+              td.style.background = 'lightgrey';
+             } else if (col > row) {
+              td.style.background = 'grey';
+              td.style.color = 'grey';
+             }
+           }")
       
     
     })
