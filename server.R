@@ -1,6 +1,6 @@
 
 library(ggplot2)
-#library(plotrix)
+
 library(rhandsontable)
 library(data.table)
 library(dplyr)
@@ -11,7 +11,7 @@ library(tidyquant)
 
 
 source("comparion_stats.R")
-
+source("tq_CalendarReturns.R")
 
 function(input, output) {
   
