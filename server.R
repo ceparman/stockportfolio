@@ -186,7 +186,7 @@ function(input, output) {
       tq_portfolio(assets_col  = symbol, 
                    returns_col = monthly.returns, 
                    weights     = weights,
-                   rebalance_on = "weeks",
+                   rebalance_on = input$period,
                    col_rename  = "Custom Portfolio")
     
     
@@ -198,7 +198,7 @@ function(input, output) {
       tq_portfolio( assets_col  = symbol, 
                    returns_col = SPX, 
                    weights     = 1,
-                   rebalance_on = "weeks",
+                   rebalance_on = input$period,
                    col_rename  = "SPX")
     
     
