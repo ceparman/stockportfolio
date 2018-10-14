@@ -27,7 +27,7 @@ fixedPage(
              actionButton("reset","Reset Portfolio")
            ),  
            tags$p(),  
-           actionButton("run", "Calculate Porfolio Performance"),
+           actionButton("run", "Calculate Portfolio Performance"),
            plotlyOutput("pie",width = "90%")
            
 

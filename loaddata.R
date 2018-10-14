@@ -1,38 +1,37 @@
 library(readxl)
 library(PerformanceAnalytics)
 require(lubridate)
+require(quantmod)
+require(tidyquant)
+
+#load top 10 tech stocks
+
+symbols <- c("AAPL","AMZN","GOOG","MSFT","FB","INTC","CSCO","ORCL","NFLX")
+
+from <- "2013-01-01"
+to <-   "2018-01-01"
 
 
-#load returns from xls file
-returns <- read_excel("ShinyDash_input.xlsx")
+prices <-  tq_get(symbols,from = from, to =to  )
 
-returns$Date<-as.Date(returns$Date, format("%m/%d/%Y"))
+returns <- prices %>%   
+           group_by(symbol) %>%
+           tq_transmute(select= adjusted,
+                        mutate_fun = periodReturn,
+                        period     = "monthly",
+                        type       = "arithmetic")
 
-returns <- returns[order(returns$Date), ]
-returns <- as.xts(returns[, 2:7], order.by = returns$Date)
-saveRDS(returns, "returns.rds")
+saveRDS(returns,"returns.rds")
 
-#getSymbols('SPX'),from =  index(returns[1,]), to =index(tail(returns,1)) ) 
+spx <-  tq_get("^GSPC",from = from, to =to  )
 
-to <- index(tail(returns,1))
-month(to) <- month(to) +1
-
-from <- index(returns[1,])
-month(from) <- month(from) - 1
-
-
-
-spx$Date<-as.Date(spx$date, format("%m/%d/%Y"))
-spx$date <- NULL
-spx <- spx[order(spx$Date), ]
-spx <- as.xts(spx[, 4], order.by = spx$Date)
+spx_returns <- spx %>%   
+  
+  tq_transmute(select= adjusted,
+               mutate_fun = periodReturn,
+               period     = "monthly",
+               type       = "arithmetic")
 
 
-
-spx_returns<-Return.calculate(to.monthly(spx))$ spx.Close
-
-
-names(spx_returns) <- "SPX"
-spx_returns <- spx_returns[-1,]
-
+names(spx_returns)[2] <- "SPX"
 saveRDS(spx_returns, "spx_returns.rds")

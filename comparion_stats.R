@@ -2,53 +2,54 @@
 comp_stats <- function(pf,pf_spx)
 {
 
-  
+pts<- as.xts(pf$`Custom Portfolio`,order.by = pf$date)
+sts <-  as.xts(pf_spx$SPX,order.by = pf_spx$date)  
   
 # returns and spx_returns
 
-spx_annualized_return <- Return.annualized(pf_spx$returns, scale=12)
+spx_annualized_return <- Return.annualized(sts, scale=12)
 
-pf_annualized_return <- Return.annualized(pf$returns, scale=12)
+pf_annualized_return <- Return.annualized(pts, scale=12)
 
-spx_sd <- sd.annualized(pf_spx$returns)
+spx_sd <- sd.annualized(sts)
 
-pf_sd <- sd.annualized(pf$returns)
+pf_sd <- sd.annualized(pts)
 
-spx_sharpe <- SharpeRatio.annualized(pf_spx$returns)
+spx_sharpe <- SharpeRatio.annualized(sts)
 
-pf_sharpe <- SharpeRatio.annualized(pf$returns)
+pf_sharpe <- SharpeRatio.annualized(pts)
 
-spx_sortino <-  SortinoRatio(pf_spx$returns)
+spx_sortino <-  SortinoRatio(sts)
 
-pf_sortino <-  SortinoRatio(pf$returns)
+pf_sortino <-  SortinoRatio(pts)
 
-spx_mean_up <- mean(pf_spx$returns[pf_spx$returns >0 ] )
+spx_mean_up <- mean(sts[sts >0 ] )
 
-pf_mean_up <- mean(pf$returns[pf$returns >0 ] )
+pf_mean_up <- mean(pts[pts >0 ] )
 
-spx_mean_down <- mean(pf_spx$returns[pf_spx$returns <0 ] )
+spx_mean_down <- mean(sts[sts <0 ] )
 
-pf_mean_down <- mean(pf$returns[pf$returns < 0 ] )
+pf_mean_down <- mean(pts[pts < 0 ] )
 
 
-spx_max_up <- max(pf_spx$returns)
+spx_max_up <- max(sts)
 
-pf_max_up <- max(pf$returns)
+pf_max_up <- max(pts)
 
-spx_min_down <- min(pf_spx$returns)
+spx_min_down <- min(sts)
 
-pf_min_down <- min(pf$returns)
+pf_min_down <- min(pts)
 
-pf_profitable_percentage <- length(pf$returns[pf$returns >0 ])/length(pf$returns)
+pf_profitable_percentage <- length(pts[pts >0 ])/length(pts)
 
-spx_profitable_percentage <- length(pf_spx$returns[pf_spx$returns >0 ])/
-                             length(pf_spx$returns)
+spx_profitable_percentage <- length(sts[sts >0 ])/
+                             length(sts)
 
-spx_dd <- DownsideDeviation(pf_spx$returns)
+spx_dd <- DownsideDeviation(sts)
 
-pf_dd <-  DownsideDeviation(pf$returns)
+pf_dd <-  DownsideDeviation(pts)
 
-correlation <- cor(cumprod(1 + pf$returns),cumprod(1 + pf_spx$returns))
+correlation <- cor(cumprod(1 + pts),cumprod(1 + sts))
 
 r2 <- correlation * correlation
 

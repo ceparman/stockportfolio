@@ -1,11 +1,12 @@
 
 library(ggplot2)
-library(plotrix)
+#library(plotrix)
 library(rhandsontable)
 library(data.table)
 library(dplyr)
 library(PerformanceAnalytics)
 library(plotly)
+library(tidyquant)
 
 
 
@@ -16,19 +17,22 @@ function(input, output) {
   
   returns <-readRDS("returns.rds")
   
-  Names <- attr(returns,"dimnames")[[2]]
+  names <- unique(returns$symbol)
+  
+  spx  <- readRDS("spx_returns.rds")
+  
+  weights <- c(.2,.1,.1,.1,.1,.1,.1,.1,.1)
+  period <- "months"
 
    spx  <- readRDS("spx_returns.rds")
   
  
   
-  Models <- data.frame("Model_Name" = Names, 
-            # Minimum = c(100000,120000,140000,159000,100000,120000),
-            # Fee = c(.004,.0036,.007,.008,.01,.004),
-             selected <-data.frame(selected =  rep(TRUE,length(Names))),
-          #   leverage = data.frame(leverage =  rep(1,length(Names))),
-          #   weights = data.frame( Weight = rep(1/length(Names),length(Names))),
-              weights = data.frame( Weight = c(.2,.3,.2,.1,.1,.1)),
+  Models <- data.frame("Model_Name" = names, 
+           
+             selected <-data.frame(selected =  rep(TRUE,length(names))),
+         
+              weights = data.frame( Weight = c(.2,.1,.1,.1,.1,.1,.1,.1,.1)),
              stringsAsFactors = FALSE)
   
  
@@ -157,7 +161,8 @@ function(input, output) {
   
   observeEvent(input$run,{
     
-    print(input$run)
+   
+
     ## get names, remove columns or set weights to zero
     DT <- values[["stocks"]]
     weights <- (DT$Weight[which(DT$selected == TRUE)])
@@ -168,18 +173,36 @@ function(input, output) {
     
     ss <- (DT$Model_Name[which(DT$selected == TRUE)])
     
-    lr<- returns[,ss]
+    #lr<- returns #[,ss]
     
     weights <- (DT$Weight[which(DT$selected == TRUE)])
    
     period <- input$period
     
+    #print(lr)
     
     
-    pf <- Return.portfolio(lr, weights = weights,rebalance_on = period ,verbose = TRUE )
+    pf <- returns %>%filter(symbol %in% ss) %>%
+      tq_portfolio(assets_col  = symbol, 
+                   returns_col = monthly.returns, 
+                   weights     = weights,
+                   rebalance_on = "weeks",
+                   col_rename  = "Custom Portfolio")
+    
+    
+ #   pf <- Return.portfolio(lr, weights = weights,rebalance_on = period ,verbose = TRUE )
    
-  
-   spx <-  Return.portfolio(spx,weights = 1,rebalance_on = period,verbose = TRUE )
+   
+    
+    pf_spx <- spx %>% mutate(symbol = "SPX") %>%
+      tq_portfolio( assets_col  = symbol, 
+                   returns_col = SPX, 
+                   weights     = 1,
+                   rebalance_on = "weeks",
+                   col_rename  = "SPX")
+    
+    
+ #  spx <-  Return.portfolio(spx,weights = 1,rebalance_on = period,verbose = TRUE )
    
     
     
@@ -190,11 +213,11 @@ function(input, output) {
       
   
       
-      spx_cum <-  cumprod(1+spx$returns)-1
-      pf_cum  <-  cumprod(1+pf$returns)-1
+      spx_cum <-  cumprod(1+pf_spx$SPX)-1
+      pf_cum  <-  cumprod(1+pf$`Custom Portfolio`)-1
       
       
-      df<- data.frame( date = index(pf_cum), pf = pf_cum$portfolio.returns,spx_cum$portfolio.returns)
+        df<- data.frame( date = spx$date, pf = pf_cum,spx_cum)
       
       names(df) <- c("date","pf","sp")
       
@@ -212,13 +235,9 @@ function(input, output) {
     })
    
     output$performance <-  renderRHandsontable({
-      cal<- table.CalendarReturns(pf$returns)
-      colnames(cal)[13] <- "YTD"  
+      cal<- tq_CalendarReturns(pf,digits=4)
       
-      yspx <- table.CalendarReturns(spx$returns)
-      
-      cal$"S&P 500" <- yspx$portfolio.returns
-      cal <- cal/100
+    
       rhandsontable(cal,contextMenu = FALSE) %>% 
       
         hot_cols(renderer = "
@@ -228,7 +247,7 @@ function(input, output) {
               td.style.background = 'pink';
              }
            }") %>%
-      hot_col(col = 1:14, format="%0.00",readOnly = TRUE) 
+      hot_col(col = 1:12, format="%0.00",readOnly = TRUE) 
       
       
       
@@ -238,10 +257,10 @@ function(input, output) {
     
     output$correlation <- renderRHandsontable({
     
-    
+      d<- as.data.frame(returns) %>% spread(symbol,monthly.returns)
     
    
-     c<- round(cor(cbind(pf$returns,returns)),3)
+     c<- round(cor(cbind(pf$`Custom Portfolio`,d[,-1])),3)
      cols <- ncol(c) 
      
      c[upper.tri(c)] <- NA
@@ -280,7 +299,9 @@ function(input, output) {
     
     output$drawdowns <-  renderRHandsontable({
       # generate bins based on input$bins from ui.R
-      tdd<-table.Drawdowns(pf$returns)
+      
+      ts<- as.xts(pf$`Custom Portfolio`,order.by = pf$date)
+      tdd<-table.Drawdowns(ts)
       tdd<-tdd[ ,c(4,5,6,1,2,3)]
       colnames(tdd) <- c("Depth","Length of Drawdown","Months to Recover",
                          "Start","Peak","End")
