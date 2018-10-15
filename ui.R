@@ -44,7 +44,7 @@ fixedPage(
            
            hr(),
           
-          h2("Porfolio Performance"),
+          h2("Porftolio Performance"),
        
           rHandsontableOutput("performance"),
 
